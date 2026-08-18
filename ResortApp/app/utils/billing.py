@@ -37,7 +37,11 @@ def calculate_booking_bill(db: Session, booking: Union[Booking, PackageBooking],
     
     # 2. Calculate stay duration
     today = date.today()
-    effective_checkout_date = max(today, booking.check_out)
+    status_str = (getattr(booking, 'status', '') or '').lower().strip()
+    if status_str in ['checked-in', 'checked_in']:
+        effective_checkout_date = max(today, booking.check_out)
+    else:
+        effective_checkout_date = booking.check_out
     stay_days = max(1, (effective_checkout_date - booking.check_in).days)
     
     charges = BillBreakdown()
