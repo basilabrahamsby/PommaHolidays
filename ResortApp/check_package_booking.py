@@ -1,5 +1,5 @@
 from app.database import SessionLocal
-from app.models.package import PackageBooking, Package
+from app.models.Package import PackageBooking, Package
 from app.models.room import Room
 
 def check_pb():
