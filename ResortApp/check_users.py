@@ -1,23 +1,18 @@
 from app.database import SessionLocal
-from app.models.user import User, Role
+from app.models.user import User
 
-db = SessionLocal()
+def check_users():
+    db = SessionLocal()
+    try:
+        users = db.query(User).all()
+        print(f"Total users in DB: {len(users)}")
+        for u in users:
+            role_name = u.role.name if u.role else "No Role"
+            print(f"ID: {u.id} | Email: {u.email} | Name: {u.name} | Role: {role_name} | Active: {u.is_active}")
+    except Exception as e:
+        print(f"Error querying users: {e}")
+    finally:
+        db.close()
 
-# Find Admin Role
-admin_role = db.query(Role).filter(Role.name == "admin").first()
-print(f"Admin Role ID: {admin_role.id if admin_role else 'NOT FOUND'}")
-
-if admin_role:
-    admins = db.query(User).filter(User.role_id == admin_role.id).all()
-    print("--- Admin Users ---")
-    for user in admins:
-        print(f"Email: {user.email}")
-else:
-    print("No admin role found!")
-
-# Also check for specific email
-target_email = "admin@orchid.com"
-user = db.query(User).filter(User.email == target_email).first()
-print(f"\nUser {target_email}: {'FOUND' if user else 'NOT FOUND'}")
-
-db.close()
+if __name__ == "__main__":
+    check_users()
