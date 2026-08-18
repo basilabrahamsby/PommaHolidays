@@ -120,9 +120,23 @@ const BookingDetailsModal = ({ booking, onClose, onImageClick, roomIdToRoom }) =
           <p><strong>Mobile:</strong> {booking.guest_mobile}</p>
           <p><strong>Email:</strong> {booking.guest_email}</p>
           <p><strong>Guests:</strong> {booking.adults} Adults, {booking.children} Children</p>
-          <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100 flex justify-between items-center mt-4">
-            <span className="text-indigo-800 font-semibold uppercase tracking-wider text-sm">Estimated Total Amount:</span>
-            <span className="text-2xl font-bold text-indigo-700">{formatCurrency(booking.total_amount || 0)}</span>
+          <p><strong>Source / OTA:</strong> <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-100 text-indigo-800 border border-indigo-200">{booking.source || 'Direct'}</span></p>
+
+          <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
+            <div className="flex justify-between items-center text-sm font-medium text-gray-600">
+              <span>Estimated Total Amount:</span>
+              <span className="text-base font-bold text-gray-900">{formatCurrency(booking.total_amount || 0)}</span>
+            </div>
+            <div className="flex justify-between items-center text-sm font-medium text-emerald-700">
+              <span>Paid / Prepaid (OTA / Advance):</span>
+              <span className="text-base font-bold text-emerald-600">{formatCurrency(booking.advance_amount || 0)}</span>
+            </div>
+            <div className="pt-2 border-t border-gray-200 flex justify-between items-center">
+              <span className="text-sm font-bold uppercase tracking-wider text-indigo-900">Balance Amount Due:</span>
+              <span className={`text-2xl font-black ${(booking.total_amount || 0) - (booking.advance_amount || 0) <= 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                {formatCurrency(Math.max(0, (booking.total_amount || 0) - (booking.advance_amount || 0)))}
+              </span>
+            </div>
           </div>
           {booking.status === 'checked-in' && booking.user && (
             <p><strong>Checked-in By:</strong> {booking.user.name}</p>

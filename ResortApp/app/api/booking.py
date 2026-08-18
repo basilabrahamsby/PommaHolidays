@@ -108,6 +108,8 @@ def get_bookings(
                 user=booking.user,
                 is_package=False,
                 total_amount=bill_result["grand_total"],
+                advance_amount=getattr(booking, 'advance_amount', 0.0) or 0.0,
+                source=getattr(booking, 'source', None),
                 rooms=[br.room for br in booking.booking_rooms if br.room]
             )
             booking_results.append(booking_out)
@@ -168,6 +170,8 @@ def get_booking_details(booking_id: Union[str, int], is_package: bool, db: Annot
             user=booking.user,
             is_package=True,
             total_amount=bill_result["grand_total"],
+            advance_amount=getattr(booking, 'advance_amount', 0.0) or 0.0,
+            source=getattr(booking, 'source', None),
             rooms=[pbr.room for pbr in booking.rooms if pbr.room]
         )
     else: # Regular booking
@@ -200,6 +204,8 @@ def get_booking_details(booking_id: Union[str, int], is_package: bool, db: Annot
             user=booking.user,
             is_package=False,
             total_amount=bill_result["grand_total"],
+            advance_amount=getattr(booking, 'advance_amount', 0.0) or 0.0,
+            source=getattr(booking, 'source', None),
             rooms=[br.room for br in booking.booking_rooms if br.room]
         )
 
