@@ -7,18 +7,11 @@ def check_pb():
         pbs = db.query(PackageBooking).all()
         print(f"Total Package Bookings: {len(pbs)}")
         for pb in pbs:
+            print(f"PackageBooking Details:")
             for k, v in pb.__dict__.items():
                 if not k.startswith('_'):
                     print(f"  {k}: {v}")
-            print("-" * 40)
-            
-        print("\nAll Packages:")
-        pkgs = db.query(Package).all()
-        for p in pkgs:
-            for k, v in p.__dict__.items():
-                if not k.startswith('_'):
-                    print(f"  {k}: {v}")
-            print("-" * 40)
+            print("=" * 50)
     except Exception as e:
         print(f"Error: {e}")
     finally:
