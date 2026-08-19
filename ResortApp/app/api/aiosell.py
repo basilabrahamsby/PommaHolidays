@@ -159,7 +159,7 @@ async def aiosell_webhook(
     adults = adults or 2
     children = children or 0
 
-    # Fuzzy Amount extraction
+    # Fuzzy Amount & Payment extraction
     amt_obj = res_data.get("amount", {})
     total_amount = (
         res_data.get("totalAmount") or 
@@ -168,6 +168,14 @@ async def aiosell_webhook(
         amt_obj.get("amountAfterTax") or 
         amt_obj.get("total") or 
         0
+    )
+    paid_status = str(res_data.get("paymentStatus") or res_data.get("payment_status") or "").lower().strip()
+    advance_amount = (
+        res_data.get("paidAmount") or 
+        res_data.get("amountPaid") or 
+        res_data.get("advanceAmount") or 
+        res_data.get("advance_amount") or 
+        (float(total_amount) if paid_status in ["paid", "prepaid", "full"] else 0.0)
     )
 
     if existing_booking or action in ["modify", "update", "amend", "modified"]:
@@ -182,6 +190,7 @@ async def aiosell_webhook(
                 adults=adults,
                 children=children,
                 total_amount=float(total_amount),
+                advance_amount=float(advance_amount),
                 source=payload.get("channel", "Aiosell"),
                 external_id=ext_id,
                 external_status=status,
@@ -199,6 +208,7 @@ async def aiosell_webhook(
             target_booking.adults = adults
             target_booking.children = children
             target_booking.total_amount = float(total_amount)
+            target_booking.advance_amount = float(advance_amount)
             target_booking.external_status = status
             db.query(BookingRoom).filter(BookingRoom.booking_id == target_booking.id).delete()
             db.flush()
@@ -213,6 +223,7 @@ async def aiosell_webhook(
             adults=adults,
             children=children,
             total_amount=float(total_amount),
+            advance_amount=float(advance_amount),
             source=payload.get("channel", "Aiosell"),
             external_id=ext_id,
             external_status=status,
