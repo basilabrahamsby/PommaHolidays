@@ -29,7 +29,12 @@ def map_aiosell_room_type(db: Session, room_code: str):
 
     # Standardize the input
     clean_code = str(room_code).strip()
-    slug_code = clean_code.lower().replace("-", " ") # Convert 'DELUXE-ROOM' to 'deluxe room'
+    slug_code = clean_code.lower().replace("-", " ").replace("_", " ")
+
+    # --- STAGE 0: Whole Property / Entire Resort Check ---
+    if any(kw in slug_code for kw in ["whole", "entire", "property", "resort", "villa"]):
+        print(f"[Aiosell Webhook] Whole Property booking detected for code '{room_code}'. Mapping ALL resort rooms.")
+        return db.query(Room).all()
 
     # --- STAGE 1: Exact Match (Fastest) ---
     rooms = db.query(Room).filter(Room.channel_manager_id == clean_code).all()
